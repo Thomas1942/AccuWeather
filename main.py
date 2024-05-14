@@ -1,4 +1,4 @@
-from clients import LocationClient
+from AccuWeather.clients import LocationClient
 from constant import API_KEY
 
 loc_client = LocationClient(token=API_KEY)

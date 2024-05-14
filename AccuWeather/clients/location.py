@@ -1,6 +1,6 @@
 import requests
 
-from models import LocationModel
+from AccuWeather.models import LocationModel
 
 class LocationClient(requests.Session):
 
