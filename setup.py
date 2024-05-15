@@ -1,4 +1,5 @@
 """Python setup.py for project_name package"""
+
 import io
 import os
 from setuptools import find_packages, setup
@@ -12,7 +13,5 @@ setup(
     long_description_content_type="text/markdown",
     author="Thomas Libosan",
     install_requires="requirements.txt",
-    entry_points={
-        "console_scripts": ["project_name = project_name.__main__:main"]
-    }
+    entry_points={"console_scripts": ["project_name = project_name.__main__:main"]},
 )

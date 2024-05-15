@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class LocationModelCityResult(BaseModel):
 
     Version: int
@@ -17,6 +18,7 @@ class LocationModelCityResult(BaseModel):
     IsAlias: bool
     SupplementalAdminAreas: list
     DataSets: list
+
 
 class LocationModel(BaseModel):
     response: list[LocationModelCityResult]
