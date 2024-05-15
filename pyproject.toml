@@ -1,0 +1,7 @@
+[project]
+name = "AccuWeather"
+version = "0.0.1"
+dependencies = ["pydantic==2.7.1", "requests==2.31.0"]
+
+[project.optional-dependencies]
+use = ["python-dotenv==1.0.1"]

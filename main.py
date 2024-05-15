@@ -1,3 +1,5 @@
+"""This is the main scripts to test the code"""
+
 from AccuWeather.clients import LocationClient
 from constant import API_KEY
 
