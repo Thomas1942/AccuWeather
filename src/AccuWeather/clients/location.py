@@ -1,5 +1,5 @@
 from typing_extensions import Unpack
-from pydantic import computed_field, PrivateAttr
+from pydantic import computed_field, PrivateAttr, HttpUrl
 from requests import Session
 from AccuWeather.models import TokenValidation, LocationModel
 from typing import Optional
@@ -7,7 +7,9 @@ from typing import Optional
 
 class LocationClient(TokenValidation):
     token: str
-    base_url: str = "http://dataservice.accuweather.com/locations/v1/cities/search?q="
+    base_url: HttpUrl = (
+        "http://dataservice.accuweather.com/locations/v1/cities/search?q="
+    )
     _session: Session = PrivateAttr(default_factory=Session)
 
     @computed_field

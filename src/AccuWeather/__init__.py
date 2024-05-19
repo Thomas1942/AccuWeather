@@ -1,2 +1,2 @@
-from .clients import location, weather, base
+from .clients import location, weather
 from .models import location, base
