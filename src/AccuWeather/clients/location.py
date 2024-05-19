@@ -1,20 +1,24 @@
-import requests
+from typing_extensions import Unpack
+from pydantic import computed_field, PrivateAttr
+from requests import Session
+from AccuWeather.models import TokenValidation, LocationModel
+from typing import Optional
 
-from AccuWeather.models import LocationModel
 
+class LocationClient(TokenValidation):
+    token: str
+    base_url: str = "http://dataservice.accuweather.com/locations/v1/cities/search?q="
+    _session: Session = PrivateAttr(default_factory=Session)
 
-class LocationClient(requests.Session):
-
-    def __init__(self, token: str) -> None:
-        super().__init__()
-        self.token = token
-        self.base_url = (
-            f"http://dataservice.accuweather.com/locations/v1/cities/search?q="
-        )
-        self.auth_url = f"&apikey={self.token}"
+    @computed_field
+    @property
+    def auth_url(self) -> str:
+        """Creates the auth_url property."""
+        return f"&apikey={self.token}"
 
     def get_location(self, loc: str, *args, **kwargs) -> LocationModel:
-
+        """Method to obtain the location key that can be used to specify a location in other API requests."""
         url = self.base_url + loc + self.auth_url
-
-        return LocationModel(response=super().request(method="GET", url=url).json())
+        return LocationModel(
+            response=self._session.request(method="GET", url=url).json()
+        )
