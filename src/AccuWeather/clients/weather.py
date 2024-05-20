@@ -5,14 +5,22 @@ from pydantic import (
     HttpUrl,
 )
 from AccuWeather.models import TokenValidation, ForecastModel5Days
+from AccuWeather.clients import LocationClient
 from requests import Session
 
 
 class WeatherClient(TokenValidation):
     token: str
-    location_key: NonNegativeInt
+    city: str
     base_url: HttpUrl = "http://dataservice.accuweather.com/forecasts/v1/daily/5day/"
     _session: Session = PrivateAttr(default_factory=Session)
+
+    @computed_field
+    @property
+    def location_key(self) -> str:
+        loc_client = LocationClient(token=self.token)
+        result = loc_client.get_location(loc=self.city)
+        return result.get_location_key()
 
     @computed_field
     @property
