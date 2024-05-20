@@ -1,5 +1,6 @@
 from pydantic import BaseModel, computed_field
 from typing import Any
+import pandas as pd
 
 
 class ForecastModel5Days(BaseModel):
@@ -18,3 +19,6 @@ class ForecastModel5Days(BaseModel):
         temp = day_dict["Temperature"]["Maximum"]["Value"]
         rain = day_dict["Day"]["RainProbability"]
         return f"{text}, max temp is {temp}C and {rain}% chance of rain."
+
+    def to_pandas_dict(self) -> pd.DataFrame:
+        return pd.DataFrame.from_records(self.output["DailyForecasts"])

@@ -33,4 +33,3 @@ class WeatherClient(TokenValidation):
         return ForecastModel5Days(
             output=self._session.request(method="GET", url=self.url).json()
         )
-        # return self._session.request(method="GET", url=self.url).json()
