@@ -2,7 +2,6 @@ from pydantic import BaseModel
 
 
 class LocationModelCityResult(BaseModel):
-
     Version: int
     Key: int
     Type: str

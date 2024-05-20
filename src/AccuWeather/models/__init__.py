@@ -1,2 +1,3 @@
 from .location import LocationModel
-from .base import TokenValidation
+from ._base import TokenValidation
+from .weather import ForecastModel5Days

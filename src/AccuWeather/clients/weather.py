@@ -4,7 +4,7 @@ from pydantic import (
     NonNegativeInt,
     HttpUrl,
 )
-from AccuWeather.models import TokenValidation
+from AccuWeather.models import TokenValidation, ForecastModel5Days
 from requests import Session
 
 
@@ -18,8 +18,11 @@ class WeatherClient(TokenValidation):
     @property
     def url(self) -> HttpUrl:
         """Creates the auth_url property."""
-        return f"{self.base_url}{self.location_key}?apikey={self.token}"
+        return f"{self.base_url}{self.location_key}?apikey={self.token}&details=true&metric=true"
 
-    def get_forecast(self, *args, **kwargs):
+    def get_5day_forecast(self, *args, **kwargs):
         """Method to obtain the location key that can be used to specify a location in other API requests."""
-        return self._session.request(method="GET", url=self.url).json()
+        return ForecastModel5Days(
+            output=self._session.request(method="GET", url=self.url).json()
+        )
+        # return self._session.request(method="GET", url=self.url).json()
