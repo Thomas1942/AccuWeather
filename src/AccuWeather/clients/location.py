@@ -7,6 +7,7 @@ from typing import Optional
 
 class LocationClient(TokenValidation):
     token: str
+    city: str
     base_url: HttpUrl = (
         "http://dataservice.accuweather.com/locations/v1/cities/search?q="
     )
@@ -18,9 +19,11 @@ class LocationClient(TokenValidation):
         """Creates the auth_url property."""
         return f"&apikey={self.token}"
 
-    def get_location(self, loc: str, *args, **kwargs) -> LocationModel:
-        """Method to obtain the location key that can be used to specify a location in other API requests."""
-        url = self.base_url + loc + self.auth_url
+    @computed_field
+    @property
+    def location(self) -> LocationModel:
+        """Creates the location property."""
+        url = self.base_url + self.city + self.auth_url
         return LocationModel(
             response=self._session.request(method="GET", url=url).json()
         )

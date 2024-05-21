@@ -4,7 +4,7 @@ from pydantic import (
     NonNegativeInt,
     HttpUrl,
 )
-from AccuWeather.models import TokenValidation, ForecastModel5Days
+from AccuWeather.models import TokenValidation, ForecastModel5Days, LocationModel
 from AccuWeather.clients import LocationClient
 from requests import Session
 
@@ -17,10 +17,18 @@ class WeatherClient(TokenValidation):
 
     @computed_field
     @property
-    def location_key(self) -> str:
-        loc_client = LocationClient(token=self.token)
-        result = loc_client.get_location(loc=self.city)
-        return result.get_location_key()
+    def location_client(self) -> LocationClient:
+        return LocationClient(token=self.token, city=self.city)
+
+    @computed_field
+    @property
+    def location(self) -> LocationModel:
+        return self.loc_client.location.response[0]
+
+    @computed_field
+    @property
+    def location_key(self) -> NonNegativeInt:
+        return self.location.Key
 
     @computed_field
     @property
