@@ -12,7 +12,7 @@ from requests import Session
 class WeatherClient(TokenValidation):
     token: str
     city: str
-    base_url: HttpUrl = "http://dataservice.accuweather.com/forecasts/v1/daily/5day/"
+    base_url: HttpUrl = "http://dataservice.accuweather.com/"
     _session: Session = PrivateAttr(default_factory=Session)
 
     @computed_field
@@ -23,21 +23,24 @@ class WeatherClient(TokenValidation):
     @computed_field
     @property
     def location(self) -> LocationModel:
-        return self.loc_client.location.response[0]
+        return self.location_client.location.response[0]
 
     @computed_field
     @property
     def location_key(self) -> NonNegativeInt:
         return self.location.Key
 
-    @computed_field
-    @property
-    def url(self) -> HttpUrl:
-        """Creates the auth_url property."""
-        return f"{self.base_url}{self.location_key}?apikey={self.token}&details=true&metric=true"
-
-    def get_5day_forecast(self, *args, **kwargs):
+    def get_5day_forecast(self, *args, **kwargs) -> ForecastModel5Days:
         """Method to obtain the location key that can be used to specify a location in other API requests."""
+        url = self.base_url + "forecasts/v1/daily/5day/" + str(self.location_key)
         return ForecastModel5Days(
-            output=self._session.request(method="GET", url=self.url).json()
+            output=self._session.request(
+                method="GET", url=url, params={"apikey": self.token, "details": "true"}
+            ).json()
         )
+
+    # def get_current_conditions(self, *args, **kwargs) -> CurrentConditionsModel:
+    #     """Method to obtain the current weather conditions for a specific location."""
+    #     url = self.url + "currentconditions/v1/"
+    #     return CurrentConditionsModel(
+    #         output=self._session.request(method="GET"))
