@@ -22,3 +22,7 @@ class ForecastModel5Days(BaseModel):
 
     def to_pandas_dict(self) -> pd.DataFrame:
         return pd.DataFrame.from_records(self.output["DailyForecasts"])
+
+
+class CurrentConditionsModel(BaseModel):
+    output: list[dict[str, Any]]

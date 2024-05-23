@@ -4,7 +4,12 @@ from pydantic import (
     NonNegativeInt,
     HttpUrl,
 )
-from AccuWeather.models import TokenValidation, ForecastModel5Days, LocationModel
+from AccuWeather.models import (
+    TokenValidation,
+    ForecastModel5Days,
+    LocationModel,
+    CurrentConditionsModel,
+)
 from AccuWeather.clients import LocationClient
 from requests import Session
 
@@ -39,8 +44,11 @@ class WeatherClient(TokenValidation):
             ).json()
         )
 
-    # def get_current_conditions(self, *args, **kwargs) -> CurrentConditionsModel:
-    #     """Method to obtain the current weather conditions for a specific location."""
-    #     url = self.url + "currentconditions/v1/"
-    #     return CurrentConditionsModel(
-    #         output=self._session.request(method="GET"))
+    def get_current_conditions(self, *args, **kwargs) -> CurrentConditionsModel:
+        """Method to obtain the current weather conditions for a specific location."""
+        url = self.base_url + "currentconditions/v1/" + str(self.location_key)
+        return CurrentConditionsModel(
+            output=self._session.request(
+                method="GET", url=url, params={"apikey": self.token, "details": "true"}
+            ).json()
+        )
