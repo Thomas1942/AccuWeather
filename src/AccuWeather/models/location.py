@@ -23,5 +23,4 @@ class LocationModel(BaseModel):
     response: list[LocationModelCityResult]
 
     def get_location_key(self):
-
         return self.response[0].Key
