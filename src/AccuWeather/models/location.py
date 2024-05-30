@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class LocationModelCityResult(BaseModel):
+class LocationModelCity(BaseModel):
     Version: int
     Key: int
     Type: str
@@ -20,7 +20,7 @@ class LocationModelCityResult(BaseModel):
 
 
 class LocationModel(BaseModel):
-    response: list[LocationModelCityResult]
+    response: list[LocationModelCity]
 
     def get_location_key(self):
         return self.response[0].Key

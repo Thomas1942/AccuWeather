@@ -38,3 +38,17 @@ class CurrentConditionsModel(BaseModel):
         wind_direction = info["Wind"]["Direction"]["Localized"]
         wind_unit = info["Wind"]["Speed"]["Metric"]["Unit"]
         return f"At the moment: {text.lower()}, with a temperature of {temp}{temp_unit}. The wind is comming from the {wind_direction} at {wind_speed}{wind_unit}."
+
+
+class HistoricalConditionslModel(BaseModel):
+    output: Any
+
+    @computed_field
+    @property
+    def temperature(self) -> list[float]:
+        temp = []
+        for h in self.output:
+            temp.append(
+                h["TemperatureSummary"]["Past24HourRange"]["Maximum"]["Metric"]["Value"]
+            )
+        return temp

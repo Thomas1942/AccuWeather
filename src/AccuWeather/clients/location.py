@@ -1,29 +1,41 @@
-from typing_extensions import Unpack
-from pydantic import computed_field, PrivateAttr, HttpUrl
+from pydantic import model_validator, HttpUrl
 from requests import Session
 from AccuWeather.models import TokenValidation, LocationModel
 from typing import Optional
 
 
 class LocationClient(TokenValidation):
+    """API client for the location API of the accuweather API."""
+
     token: str
-    city: str
-    base_url: HttpUrl = (
-        "http://dataservice.accuweather.com/locations/v1/cities/search?q="
-    )
-    _session: Session = PrivateAttr(default_factory=Session)
+    city: str = None
+    country: Optional[str] = None
+    base_url: HttpUrl = "http://dataservice.accuweather.com/locations/v1/"
+    session: type = Session
+    location: LocationModel = None
 
-    @computed_field
-    @property
-    def auth_url(self) -> str:
-        """Creates the auth_url property."""
-        return f"&apikey={self.token}"
-
-    @computed_field
-    @property
-    def location(self) -> LocationModel:
-        """Creates the location property."""
-        url = self.base_url + self.city + self.auth_url
-        return LocationModel(
-            response=self._session.request(method="GET", url=url).json()
+    @model_validator(mode="before")
+    def create_location_attribute(cls, values):
+        if values.get("country") is None:
+            url = (
+                cls.model_fields.get("base_url").default
+                + "cities/search?q="
+                + values.get("city")
+            )
+        else:
+            url = (
+                cls.model_fields.get("base_url").default
+                + "search?q="
+                + values.get("city")
+                + "%20"
+                + values.get("country")
+            )
+        loc_session = cls.model_fields.get("session").default()
+        values["location"] = LocationModel(
+            response=loc_session.request(
+                method="GET",
+                url=url,
+                params={"apikey": values.get("token"), "details": "true"},
+            ).json()
         )
+        return values

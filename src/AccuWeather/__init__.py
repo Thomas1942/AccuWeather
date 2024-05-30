@@ -1,2 +1,2 @@
-from .clients import location, weather
-from .models import _base, location, weather
+from .clients import location, weather  # F401
+from .models import _base, location, weather  # F401
