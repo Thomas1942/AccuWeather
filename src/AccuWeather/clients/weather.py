@@ -13,7 +13,7 @@ from AccuWeather.models import (
 )
 from AccuWeather.clients import LocationClient
 from requests import Session
-from typing import Optional
+from typing import Optional, Any
 
 
 class WeatherClient(TokenValidation):
@@ -30,7 +30,7 @@ class WeatherClient(TokenValidation):
     location_key: NonNegativeInt = None
 
     @model_validator(mode="before")
-    def compute_location_attributes(cls, values):
+    def compute_location_attributes(cls, values: Any) -> Any:
         """Creates the fixed attributes that created from other attributes
         when an instance is created."""
         values["location_client"] = LocationClient(

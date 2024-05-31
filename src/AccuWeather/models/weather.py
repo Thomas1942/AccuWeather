@@ -17,10 +17,11 @@ class ForecastModel5Days(BaseModel):
         day_dict = self.output["DailyForecasts"][1]
         text = day_dict["Day"]["IconPhrase"].replace("w/", "with")
         temp = day_dict["Temperature"]["Maximum"]["Value"]
+        temp_unit = day_dict["Temperature"]["Maximum"]["Unit"]
         rain = day_dict["Day"]["RainProbability"]
-        return f"{text}, max temp is {temp}C and {rain}% chance of rain."
+        return f"{text}, max temp is {temp}{temp_unit} and {rain}% chance of rain."
 
-    def to_pandas_dict(self) -> pd.DataFrame:
+    def to_pandas_df(self) -> pd.DataFrame:
         return pd.DataFrame.from_records(self.output["DailyForecasts"])
 
 

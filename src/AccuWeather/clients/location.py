@@ -1,7 +1,7 @@
 from pydantic import model_validator, HttpUrl
 from requests import Session
 from AccuWeather.models import TokenValidation, LocationModel
-from typing import Optional
+from typing import Optional, Any
 
 
 class LocationClient(TokenValidation):
@@ -15,7 +15,7 @@ class LocationClient(TokenValidation):
     location: LocationModel = None
 
     @model_validator(mode="before")
-    def create_location_attribute(cls, values):
+    def create_location_attribute(cls, values: Any) -> Any:
         if values.get("country") is None:
             url = (
                 cls.model_fields.get("base_url").default

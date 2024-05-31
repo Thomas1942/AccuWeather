@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class LocationModelCity(BaseModel):
     Version: int
-    Key: int
+    Key: str
     Type: str
     Rank: int
     LocalizedName: str
