@@ -11,7 +11,6 @@ from AccuWeather.clients import LocationClient
 from AccuWeather.models import (
     CurrentConditionsModel,
     ForecastModel5Days,
-    HistoricalConditionslModel,
     LocationModelCity,
     TokenValidation,
 )
@@ -57,20 +56,6 @@ class WeatherClient(TokenValidation):
         """Method to obtain the current weather conditions for a specific location."""
         url = self.base_url + "currentconditions/v1/" + str(self.location_key)
         return CurrentConditionsModel(
-            output=self._session.request(
-                method="GET", url=url, params={"apikey": self.token, "details": "true"}
-            ).json()
-        )
-
-    def get_historical_conditions(self) -> HistoricalConditionslModel:
-        """Method to return the weather conditions over the past 24 hours."""
-        url = (
-            self.base_url
-            + "currentconditions/v1/"
-            + str(self.location_key)
-            + "/historical/24"
-        )
-        return HistoricalConditionslModel(
             output=self._session.request(
                 method="GET", url=url, params={"apikey": self.token, "details": "true"}
             ).json()

@@ -8,6 +8,10 @@ weather = WeatherClient(token=API_KEY, city="sydney", country="canada")
 # Provides information about the location
 weather.location
 
+# The country argument for the WeatherClient instance is optional
+# The code below would give you the location for Syndey, Australia
+weather = WeatherClient(token=API_KEY, city="sydney")
+
 # Creates an instance that yields forecast information
 forecast = weather.get_5day_forecast()
 # Prints the forecast for tomorrow
@@ -19,7 +23,3 @@ forecast.to_pandas_df()
 conditions = weather.get_current_conditions()
 # Prints the current conditions
 conditions.current_conditions
-
-# Work in progress
-hist_conditions = weather.get_historical_conditions()
-hist_conditions.temperature
