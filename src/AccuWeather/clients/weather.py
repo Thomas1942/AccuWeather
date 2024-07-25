@@ -1,19 +1,20 @@
+from typing import Any, Optional
+
 from pydantic import (
-    model_validator,
-    PrivateAttr,
     NonNegativeInt,
-    HttpUrl,
+    PrivateAttr,
+    model_validator,
 )
-from AccuWeather.models import (
-    TokenValidation,
-    ForecastModel5Days,
-    LocationModelCity,
-    CurrentConditionsModel,
-    HistoricalConditionslModel,
-)
-from AccuWeather.clients import LocationClient
 from requests import Session
-from typing import Optional, Any
+
+from AccuWeather.clients import LocationClient
+from AccuWeather.models import (
+    CurrentConditionsModel,
+    ForecastModel5Days,
+    HistoricalConditionslModel,
+    LocationModelCity,
+    TokenValidation,
+)
 
 
 class WeatherClient(TokenValidation):
@@ -22,12 +23,12 @@ class WeatherClient(TokenValidation):
 
     token: str
     city: str
-    country: Optional[str] = None
-    base_url: HttpUrl = "http://dataservice.accuweather.com/"
+    country: Optional[str] | None = None
+    base_url: str = "http://dataservice.accuweather.com/"
     _session: Session = PrivateAttr(default_factory=Session)
-    location_client: LocationClient = None
-    location: LocationModelCity = None
-    location_key: NonNegativeInt = None
+    location_client: LocationClient | None = None
+    location: LocationModelCity | None = None
+    location_key: NonNegativeInt | None = None
 
     @model_validator(mode="before")
     def compute_location_attributes(cls, values: Any) -> Any:

@@ -1,18 +1,20 @@
-from pydantic import model_validator, HttpUrl
+from typing import Any, Optional
+
+from pydantic import model_validator
 from requests import Session
-from AccuWeather.models import TokenValidation, LocationModel
-from typing import Optional, Any
+
+from AccuWeather.models import LocationModel, TokenValidation
 
 
 class LocationClient(TokenValidation):
     """API client for the location API of the accuweather API."""
 
     token: str
-    city: str = None
-    country: Optional[str] = None
-    base_url: HttpUrl = "http://dataservice.accuweather.com/locations/v1/"
+    city: str | None = None
+    country: Optional[str] | None = None
+    base_url: str = "http://dataservice.accuweather.com/locations/v1/"
     session: type = Session
-    location: LocationModel = None
+    location: LocationModel | None = None
 
     @model_validator(mode="before")
     def create_location_attribute(cls, values: Any) -> Any:

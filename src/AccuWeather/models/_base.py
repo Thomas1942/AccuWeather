@@ -13,5 +13,5 @@ class TokenValidation(BaseModel):
         """This function validates wether the api token complies with
         the token requirements."""
         if not VALID_TOKEN_REGEX.match(t):
-            raise ValueError("Not a valid token ...")
+            raise ValueError(f"Your token, {t}, is not valid ... ")
         return t
