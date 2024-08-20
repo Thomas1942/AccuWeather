@@ -1,7 +1,15 @@
 [project]
 name = "AccuWeather"
 version = "0.0.1"
-dependencies = ["pydantic==2.7.1", "requests==2.31.0"]
-
-[project.optional-dependencies]
-use = ["python-dotenv==1.0.1"]
+description = "The goal of this project is to create a user friendly api client for AccuWeather api."
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    "pandas==1.5.3",
+    "pydantic==2.8.2",
+    "python-dotenv==1.0.1",
+    "Requests==2.32.3",
+]
+authors = [{ name = "Thomas" }]
+keywords = ["AccuWeather", "API", "weather", "client", "python"]
+urls = { repository = "https://github.com/Thomas1942/AccuWeather" }
