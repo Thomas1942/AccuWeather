@@ -2,7 +2,7 @@
 A python library to interact with the accuweather api.
 
 ## General information
-How to use the package is displayed in the `main.py` file.
+How to use the package is displayed in the `test.py` file.
 
 For now, there is only basic functionality included in this package.
 However, I hope to add more features in the future.
