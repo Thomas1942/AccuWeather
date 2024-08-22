@@ -3,7 +3,7 @@ from typing import Any, Optional
 from pydantic import model_validator
 from requests import Session
 
-from AccuWeather.models import LocationModel, TokenValidation
+from accuweather_client.models import LocationModel, TokenValidation
 
 
 class LocationClient(TokenValidation):

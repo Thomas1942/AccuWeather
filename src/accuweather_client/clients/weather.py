@@ -7,8 +7,8 @@ from pydantic import (
 )
 from requests import Session
 
-from AccuWeather.clients import LocationClient
-from AccuWeather.models import (
+from accuweather_client.clients import LocationClient
+from accuweather_client.models import (
     CurrentConditionsModel,
     ForecastModel5Days,
     LocationModelCity,

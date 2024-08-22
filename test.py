@@ -1,6 +1,6 @@
 """This is the main scripts to test the code"""
 
-from AccuWeather.clients import WeatherClient
+from accuweather_client.clients import WeatherClient
 from constants import API_KEY
 
 # Create an instance of the WeatherClient class
