@@ -1,0 +1,13 @@
+# Include all Python source files
+recursive-include your_package *.py
+
+# Include README and LICENSE files
+include README.md
+include LICENSE
+
+# Include other types of files if needed
+include *.txt
+
+# Exclude certain files
+exclude *.log
+exclude tests/*

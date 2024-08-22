@@ -1,6 +1,6 @@
 [project]
 name = "accuweather_client"
-version = "0.0.1"
+version = "0.0.2"
 description = "The goal of this project is to create a user friendly api client for AccuWeather api."
 readme = "README.md"
 requires-python = ">=3.9"
