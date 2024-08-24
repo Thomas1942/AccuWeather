@@ -1,5 +1,4 @@
 from typing import Optional
-
 from pydantic import model_validator
 from requests import Session
 
@@ -13,11 +12,12 @@ class LocationClient(TokenValidation):
     city: str | None = None
     country: Optional[str] | None = None
     base_url: str = "http://dataservice.accuweather.com/locations/v1/"
+    query_url: str | None = None
     session: type = Session
     location: LocationModel | None = None
 
     @model_validator(mode="before")
-    def create_location_attribute(cls, values: dict) -> dict:
+    def set_location_attributes(cls, values: dict) -> dict:
         if not values.get("country"):
             url = (
                 cls.model_fields.get("base_url").default
@@ -32,12 +32,17 @@ class LocationClient(TokenValidation):
                 + "%20"
                 + values.get("country")
             )
+        values["query_url"] = url
+        return values
+
+    @model_validator(mode="after")
+    def create_location_attribute(cls, values):
         loc_session = cls.model_fields.get("session").default()
-        values["location"] = LocationModel(
+        values.location = LocationModel(
             response=loc_session.request(
                 method="GET",
-                url=url,
-                params={"apikey": values.get("token"), "details": "true"},
+                url=values.query_url,
+                params={"apikey": values.token, "details": "true"},
             ).json()
         )
         return values
