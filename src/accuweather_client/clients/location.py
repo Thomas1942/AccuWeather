@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Optional
 
 from pydantic import model_validator
 from requests import Session
@@ -17,8 +17,8 @@ class LocationClient(TokenValidation):
     location: LocationModel | None = None
 
     @model_validator(mode="before")
-    def create_location_attribute(cls, values: Any) -> Any:
-        if values.get("country") is None:
+    def create_location_attribute(cls, values: dict) -> dict:
+        if not values.get("country"):
             url = (
                 cls.model_fields.get("base_url").default
                 + "cities/search?q="
