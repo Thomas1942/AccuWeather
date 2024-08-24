@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Dict, Optional
 from pydantic import model_validator
 from requests import Session
 
@@ -36,7 +36,7 @@ class LocationClient(TokenValidation):
         return values
 
     @model_validator(mode="after")
-    def create_location_attribute(cls, values):
+    def create_location_attribute(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         loc_session = cls.model_fields.get("session").default()
         values.location = LocationModel(
             response=loc_session.request(
