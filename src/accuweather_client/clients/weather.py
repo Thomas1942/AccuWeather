@@ -1,13 +1,24 @@
-from typing import Any, Optional
+"""
+weather_client.py
 
-from pydantic import (
-    NonNegativeInt,
-    PrivateAttr,
-    model_validator,
-)
+This module provides an API client for interacting with the AccuWeather API
+to retrieve weather data, including current conditions and a 5-day forecast.
+
+Example:
+    client = WeatherClient(token="your_api_key", city="New York")
+    forecast = client.get_5day_forecast()
+    print(forecast)
+
+Classes:
+    - WeatherClient: API client for fetching current conditions and 5-day forecasts.
+"""
+
+from typing import Optional, Dict, Any
+from pydantic import PrivateAttr, model_validator
 from requests import Session
+from requests.exceptions import RequestException
 
-from accuweather_client.clients import LocationClient
+from accuweather_client.clients import get_location_model, LocationBaseClient
 from accuweather_client.models import (
     CurrentConditionsModel,
     ForecastModel5Days,
@@ -17,46 +28,103 @@ from accuweather_client.models import (
 
 
 class WeatherClient(TokenValidation):
-    """Accuweather API client to get a 5 day forecast and the current
-    conditions."""
+    """
+    AccuWeather API client for retrieving a 5-day weather forecast and current weather conditions.
 
-    token: str
-    city: str
-    country: Optional[str] | None = None
+    Attributes:
+        token (str): API token for authenticating requests to the AccuWeather API.
+        city (Optional[str]): The city name for which to fetch weather data.
+        country (Optional[str]): The country associated with the city (optional).
+        poi (Optional[str]): The Point of Interest for which to fetch weather data.
+        base_url (str): The base URL for the AccuWeather API endpoints.
+        _session (Session): A requests session used for making HTTP requests.
+        location_client (Optional[LocationBaseClient]): Client for fetching location-related data.
+        location (Optional[LocationModelCity]): Location data model retrieved from the location client.
+        location_key (Optional[str]): The location key used to specify a location in API requests.
+    """
+
+    city: Optional[str] = None
+    country: Optional[str] = None
+    poi: Optional[str] = None
     base_url: str = "http://dataservice.accuweather.com/"
     _session: Session = PrivateAttr(default_factory=Session)
-    location_client: LocationClient | None = None
-    location: LocationModelCity | None = None
-    location_key: NonNegativeInt | None = None
+    location_client: Optional[LocationBaseClient] = None
+    location: Optional[LocationModelCity] = None
+    location_key: Optional[str] = None
 
     @model_validator(mode="before")
-    def compute_location_attributes(cls, values: Any) -> Any:
-        """Creates the fixed attributes that created from other attributes
-        when an instance is created."""
-        values["location_client"] = LocationClient(
+    @classmethod
+    def create_location_attributes(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Initializes location-related attributes when an instance of WeatherClient is created.
+
+        This method sets up the `location_client`, `location`, and `location_key` attributes
+        based on the provided city, country, or POI.
+
+        Args:
+            values (Dict[str, Any]): The dictionary of values passed during initialization.
+
+        Returns:
+            Dict[str, Any]: The dictionary of values with the location-related attributes added.
+        """
+        location_client = get_location_model(
             token=values.get("token"),
             city=values.get("city"),
             country=values.get("country"),
+            poi=values.get("poi"),
         )
-        values["location"] = values["location_client"].location.response[0]
-        values["location_key"] = values["location"].Key
+        location = location_client.location.response[0]
+        location_key = location.Key
+
+        # Directly update the values dictionary
+        values.update(
+            {
+                "location_client": location_client,
+                "location": location,
+                "location_key": location_key,
+            }
+        )
         return values
 
-    def get_5day_forecast(self) -> ForecastModel5Days:
-        """Method to obtain the location key that can be used to specify a
-        location in other API requests."""
-        url = self.base_url + "forecasts/v1/daily/5day/" + str(self.location_key)
-        return ForecastModel5Days(
-            output=self._session.request(
+    def _make_request(self, endpoint: str) -> dict:
+        """
+        Helper method to make API requests to the AccuWeather API.
+
+        Args:
+            endpoint (str): The API endpoint to query.
+
+        Returns:
+            dict: The JSON response from the API.
+
+        Raises:
+            RequestException: If the API request fails.
+        """
+        url = self.base_url + endpoint + str(self.location_key)
+        try:
+            response = self._session.request(
                 method="GET", url=url, params={"apikey": self.token, "details": "true"}
-            ).json()
-        )
+            )
+            response.raise_for_status()  # Raise error for bad responses
+            return response.json()
+        except RequestException as e:
+            raise RequestException(f"Failed to retrieve data from {url}") from e
+
+    def get_5day_forecast(self) -> ForecastModel5Days:
+        """
+        Retrieves the 5-day weather forecast for the specified location.
+
+        Returns:
+            ForecastModel5Days: A model containing the 5-day weather forecast data.
+        """
+        return ForecastModel5Days(output=self._make_request("forecasts/v1/daily/5day/"))
 
     def get_current_conditions(self) -> CurrentConditionsModel:
-        """Method to obtain the current weather conditions for a specific location."""
-        url = self.base_url + "currentconditions/v1/" + str(self.location_key)
+        """
+        Retrieves the current weather conditions for the specified location.
+
+        Returns:
+            CurrentConditionsModel: A model containing the current weather conditions data.
+        """
         return CurrentConditionsModel(
-            output=self._session.request(
-                method="GET", url=url, params={"apikey": self.token, "details": "true"}
-            ).json()
+            output=self._make_request("currentconditions/v1/")
         )
