@@ -12,11 +12,11 @@ charset-normalizer==3.3.2
     # via requests
 idna==3.7
     # via requests
-numpy==1.24.1
+numpy==2.1.0
     # via
     #   -r requirements.in
     #   pandas
-pandas==1.5.3
+pandas==2.2.2
     # via -r requirements.in
 pydantic==2.8.2
     # via -r requirements.in
@@ -36,5 +36,7 @@ typing-extensions==4.12.2
     # via
     #   pydantic
     #   pydantic-core
+tzdata==2024.1
+    # via pandas
 urllib3==2.2.2
     # via requests
