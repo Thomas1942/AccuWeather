@@ -1,16 +1,22 @@
-"""This is the main scripts to test the code"""
+"""Some code to test and show the functionality of the package"""
 
 from accuweather_client.clients import WeatherClient
 from constants import API_KEY
 
-# Create an instance of the WeatherClient class
-weather = WeatherClient(token=API_KEY, city="sydney", country="canada")
+# Create an instance of the WeatherClient class, regular search
+weather = WeatherClient(token=API_KEY, city="sydney")
 # Provides information about the location
 weather.location
 
-# The country argument for the WeatherClient instance is optional
-# The code below would give you the location for Syndey, Australia
-weather = WeatherClient(token=API_KEY, city="sydney")
+# In the example above, the selected location is Sydney, Australia
+# If you like to select Sydney in Canada, you can refine your search with
+# the addition of the country parameter
+weather = WeatherClient(token=API_KEY, city="sydney", country="canada")
+weather.location
+
+# Create an instance of the WeatherClient class, POI search
+weather = WeatherClient(token=API_KEY, poi="Eiffel tower")
+weather.location
 
 # Creates an instance that yields forecast information
 forecast = weather.get_5day_forecast()
