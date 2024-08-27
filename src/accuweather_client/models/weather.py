@@ -1,6 +1,7 @@
-from pydantic import BaseModel, computed_field
 from typing import Any
+
 import pandas as pd
+from pydantic import BaseModel, computed_field
 
 
 class ForecastModel5Days(BaseModel):
