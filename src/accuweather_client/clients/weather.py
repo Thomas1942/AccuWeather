@@ -47,6 +47,8 @@ class WeatherClient(TokenValidation):
     city: Optional[str] = None
     country: Optional[str] = None
     poi: Optional[str] = None
+    lat: Optional[float] = None
+    lon: Optional[float] = None
     base_url: str = "http://dataservice.accuweather.com/"
     _session: Session = PrivateAttr(default_factory=Session)
     location_client: Optional[LocationBaseClient] = None
@@ -75,6 +77,8 @@ class WeatherClient(TokenValidation):
             city=values.get("city"),
             country=values.get("country"),
             poi=values.get("poi"),
+            lat=values.get("lat"),
+            lon=values.get("lon"),
         )
         location = location_client.location.response[0]
         location_key = location.Key

@@ -18,6 +18,10 @@ weather.location
 weather = WeatherClient(token=API_KEY, poi="Eiffel tower")
 weather.location
 
+# Create an instance of the WeatherClient class, lat lon search
+weather = WeatherClient(token=API_KEY, lat=51.988, lon=-4.88)
+weather.location
+
 # Creates an instance that yields forecast information
 forecast = weather.get_5day_forecast()
 # Prints the forecast for tomorrow

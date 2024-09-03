@@ -17,10 +17,10 @@ Functions:
       based on the input parameters.
 """
 
-from typing import Any, Dict, Optional
 from urllib import parse
+from typing import Any, Dict, Optional
 
-from pydantic import model_validator
+from pydantic import Field, model_validator
 from requests import Session
 
 from accuweather_client.models import LocationModel, TokenValidation
@@ -57,9 +57,14 @@ class LocationBaseClient(TokenValidation):
         Raises:
             ValueError: If neither 'city' nor 'poi' is provided in the values.
         """
-        if not values.get("city") and not values.get("poi"):
+        if (
+            not values.get("city")
+            and not values.get("poi")
+            and not values.get("lat")
+            and not values.get("lon")
+        ):
             raise ValueError(
-                'At least one of "city" or "poi" must be provided.'
+                'At least "city", "poi" or a "lat lon" combination must be provided.'
             )
         return values
 
@@ -95,41 +100,6 @@ class LocationBaseClient(TokenValidation):
             values.location = LocationModel(response=response.json())
         except Exception as e:
             raise ValueError(f"Failed to fetch location data: {e}")
-        return values
-
-
-class LocationPOIClient(LocationBaseClient):
-    """
-    API client for fetching location data by Point of Interest (POI) from the
-    AccuWeather API.
-
-    Attributes:
-        poi (str): The Point of Interest for which to fetch location data.
-        base_url (str): The base URL for the POI search endpoint.
-    """
-
-    poi: str
-    base_url: str = (
-        "http://dataservice.accuweather.com/locations/v1/poi/search?q="
-    )
-
-    @model_validator(mode="before")
-    @classmethod
-    def set_location_attributes(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Sets the query URL for the POI search based on the provided POI.
-
-        Args:
-            values (Dict[str, Any]): The dictionary of values passed during
-            initialization.
-
-        Returns:
-            Dict[str, Any]: The dictionary of values with the query URL set.
-        """
-        url = cls.model_fields["base_url"].default + parse.quote(
-            values.get("poi")
-        )
-        values["query_url"] = url
         return values
 
 
@@ -170,8 +140,96 @@ class LocationCityClient(LocationBaseClient):
         return values
 
 
+class LocationPOIClient(LocationBaseClient):
+    """
+    API client for fetching location data by Point of Interest (POI) from the
+    AccuWeather API.
+
+    Attributes:
+        poi (str): The Point of Interest for which to fetch location data.
+        base_url (str): The base URL for the POI search endpoint.
+    """
+
+    poi: str
+    base_url: str = (
+        "http://dataservice.accuweather.com/locations/v1/poi/search?q="
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def set_location_attributes(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Sets the query URL for the POI search based on the provided POI.
+
+        Args:
+            values (Dict[str, Any]): The dictionary of values passed during
+            initialization.
+
+        Returns:
+            Dict[str, Any]: The dictionary of values with the query URL set.
+        """
+        url = cls.model_fields["base_url"].default + parse.quote(
+            values.get("poi")
+        )
+        values["query_url"] = url
+        return values
+
+
+class LocationGEOClient(LocationBaseClient):
+    """
+    API client for fetching location data by latitude and longitude from the
+    AccuWeather API.
+
+    Attributes:
+        lat (float): The latitude for which to fetch location data.
+        lon (float): The longitude for which to fetch location data.
+        base_url (str): The base URL for the POI search endpoint.
+    """
+
+    lat: float = Field(
+        ..., ge=-90, le=90, description="Latitude must be between -90 and 90."
+    )
+    lon: float = Field(
+        ...,
+        ge=-180,
+        le=180,
+        description="Longitude must be between -180 and 180.",
+    )
+    base_url: str = (
+        "http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?q="
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def set_location_attributes(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Sets the query URL for the lat-lon search based on the provided
+        latitude and longitude.
+
+        Args:
+            values (Dict[str, Any]): The dictionary of values passed during
+            initialization.
+
+        Returns:
+            Dict[str, Any]: The dictionary of values with the query URL set.
+        """
+        url = (
+            cls.model_fields["base_url"].default
+            + str(values.get("lat"))
+            + ","
+            + str(values.get("lon"))
+        )
+        print(url)
+        values["query_url"] = url
+        return values
+
+
 def get_location_model(
-    city: str | None = None, poi: str | None = None, **kwargs
+    city: str | None = None,
+    poi: str | None = None,
+    lat: float | None = None,
+    lon: float | None = None,
+    **kwargs,
 ) -> LocationBaseClient:
     """
     Factory function to initialize the correct location client based on the
@@ -180,8 +238,8 @@ def get_location_model(
     Args:
         city (str, optional): The city name for which to fetch location data.
         poi (str, optional): The Point of Interest for which to fetch location
-        data. **kwargs: Additional keyword arguments passed to the client
-        classes.
+        data.
+        **kwargs: Additional keyword arguments passed to the client classes.
 
     Returns:
         LocationBaseClient: An instance of either LocationCityClient or
@@ -199,4 +257,10 @@ def get_location_model(
         return LocationCityClient(city=city, **kwargs)
     if poi:
         return LocationPOIClient(poi=poi, **kwargs)
-    raise ValueError('You must provide either a "city" or a "poi".')
+    if isinstance(lat, float) and isinstance(lon, float):
+        return LocationGEOClient(lat=lat, lon=lon, **kwargs)
+    if lat or lon:
+        raise ValueError('You must provide both "lat" and "lon".')
+    raise ValueError(
+        'You must provide either a "city", a "poi" or a "lat lon" combination.'
+    )
