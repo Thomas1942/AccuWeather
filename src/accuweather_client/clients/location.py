@@ -23,7 +23,7 @@ from typing import Any, Dict, Optional
 from pydantic import Field, model_validator
 from requests import Session
 
-from accuweather_client.models import LocationModel, TokenValidation
+from accuweather_client.models import TokenValidation, LocationModel
 
 
 class LocationBaseClient(TokenValidation):

@@ -23,7 +23,7 @@ from accuweather_client.clients import LocationBaseClient, get_location_model
 from accuweather_client.models import (
     CurrentConditionsModel,
     ForecastModel5Days,
-    LocationModelCity,
+    LocationModelItem,
     TokenValidation,
 )
 
@@ -40,7 +40,7 @@ class WeatherClient(TokenValidation):
         base_url (str): The base URL for the AccuWeather API endpoints.
         _session (Session): A requests session used for making HTTP requests.
         location_client (Optional[LocationBaseClient]): Client for fetching location-related data.
-        location (Optional[LocationModelCity]): Location data model retrieved from the location client.
+        location (Optional[LocationModel]): Location data model retrieved from the location client.
         location_key (Optional[str]): The location key used to specify a location in API requests.
     """
 
@@ -52,7 +52,7 @@ class WeatherClient(TokenValidation):
     base_url: str = "http://dataservice.accuweather.com/"
     _session: Session = PrivateAttr(default_factory=Session)
     location_client: Optional[LocationBaseClient] = None
-    location: Optional[LocationModelCity] = None
+    location: Optional[LocationModelItem] = None
     location_key: Optional[str] = None
 
     @model_validator(mode="before")
