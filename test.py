@@ -4,19 +4,19 @@ from accuweather_client.clients import WeatherClient
 from constants import API_KEY
 
 # Create an instance of the WeatherClient class, regular search
-weather = WeatherClient(token=API_KEY, city="sydney")
-# Provides information about the location
-weather.location
+# weather = WeatherClient(token=API_KEY, poi="Eiffel tower")
+# # Provides information about the location
+# weather.location
 
-# In the example above, the selected location is Sydney, Australia
-# If you like to select Sydney in Canada, you can refine your search with
-# the addition of the country parameter
-weather = WeatherClient(token=API_KEY, city="sydney", country="canada")
-weather.location
+# # In the example above, the selected location is Sydney, Australia
+# # If you like to select Sydney in Canada, you can refine your search with
+# # the addition of the country parameter
+# weather = WeatherClient(token=API_KEY, city="sydney", country="canada")
+# weather.location
 
-# Create an instance of the WeatherClient class, POI search
-weather = WeatherClient(token=API_KEY, poi="Eiffel tower")
-weather.location
+# # Create an instance of the WeatherClient class, POI search
+# weather = WeatherClient(token=API_KEY, poi="Eiffel tower")
+# weather.location
 
 # Create an instance of the WeatherClient class, lat lon search
 weather = WeatherClient(token=API_KEY, lat=51.988, lon=-4.88)

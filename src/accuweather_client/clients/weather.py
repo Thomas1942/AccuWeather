@@ -80,7 +80,11 @@ class WeatherClient(TokenValidation):
             lat=values.get("lat"),
             lon=values.get("lon"),
         )
-        location = location_client.location.response[0]
+        location = (
+            location_client.location.response[0]
+            if isinstance(location_client.location.response, list)
+            else location_client.location.response
+        )
         location_key = location.Key
 
         # Directly update the values dictionary

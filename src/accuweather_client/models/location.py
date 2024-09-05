@@ -65,9 +65,10 @@ class Source(BaseModel):
     DataType: str
     Source: str
     SourceId: int
+    PartnerSourceUrl: Optional[str] = None
 
 
-class DMA(BaseModel):
+class DMAModel(BaseModel):
     ID: str
     EnglishName: str
     Key: int
@@ -97,7 +98,13 @@ class Details(BaseModel):
     Sources: List[Source]
     CanonicalPostalCode: str
     CanonicalLocationKey: str
-    DMA: Optional[DMA]
+    DMA: Optional[DMAModel] = None
+
+
+class ParentCityModel(BaseModel):
+    Key: str
+    LocalizedName: str
+    EnglishName: str
 
 
 class LocationModelItem(BaseModel):
@@ -117,6 +124,7 @@ class LocationModelItem(BaseModel):
     SupplementalAdminAreas: List[SupplementalAdminArea]
     DataSets: List[str]
     Details: Details
+    ParentCity: Optional[ParentCityModel] = None
 
 
 class LocationGEOModel(BaseModel):
