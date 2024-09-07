@@ -23,7 +23,7 @@ from accuweather_client.clients import LocationBaseClient, get_location_model
 from accuweather_client.models import (
     CurrentConditionsModel,
     ForecastModel5Days,
-    LocationModelCity,
+    LocationModelItem,
     TokenValidation,
 )
 
@@ -40,17 +40,19 @@ class WeatherClient(TokenValidation):
         base_url (str): The base URL for the AccuWeather API endpoints.
         _session (Session): A requests session used for making HTTP requests.
         location_client (Optional[LocationBaseClient]): Client for fetching location-related data.
-        location (Optional[LocationModelCity]): Location data model retrieved from the location client.
+        location (Optional[LocationModel]): Location data model retrieved from the location client.
         location_key (Optional[str]): The location key used to specify a location in API requests.
     """
 
     city: Optional[str] = None
     country: Optional[str] = None
     poi: Optional[str] = None
+    lat: Optional[float] = None
+    lon: Optional[float] = None
     base_url: str = "http://dataservice.accuweather.com/"
     _session: Session = PrivateAttr(default_factory=Session)
     location_client: Optional[LocationBaseClient] = None
-    location: Optional[LocationModelCity] = None
+    location: Optional[LocationModelItem] = None
     location_key: Optional[str] = None
 
     @model_validator(mode="before")
@@ -75,8 +77,14 @@ class WeatherClient(TokenValidation):
             city=values.get("city"),
             country=values.get("country"),
             poi=values.get("poi"),
+            lat=values.get("lat"),
+            lon=values.get("lon"),
         )
-        location = location_client.location.response[0]
+        location = (
+            location_client.location.response[0]
+            if isinstance(location_client.location.response, list)
+            else location_client.location.response
+        )
         location_key = location.Key
 
         # Directly update the values dictionary
