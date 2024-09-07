@@ -71,7 +71,7 @@ class Source(BaseModel):
 class DMAModel(BaseModel):
     ID: str
     EnglishName: str
-    Key: int
+    Key: int = None
 
 
 class Details(BaseModel):

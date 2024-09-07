@@ -219,7 +219,6 @@ class LocationGEOClient(LocationBaseClient):
             + ","
             + str(values.get("lon"))
         )
-        print(url)
         values["query_url"] = url
         return values
 
