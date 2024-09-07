@@ -127,27 +127,8 @@ class LocationModelItem(BaseModel):
     ParentCity: Optional[ParentCityModel] = None
 
 
-class LocationGEOModel(BaseModel):
-    Version: int
-    Key: str
-    Type: str
-    Rank: int
-    LocalizedName: str
-    EnglishName: str
-    PrimaryPostalCode: str
-    Region: Region
-    Country: Country
-    AdministrativeArea: AdministrativeArea
-    TimeZone: TimeZone
-    GeoPosition: GeoPosition
-    IsAlias: bool
-    SupplementalAdminAreas: List[SupplementalAdminArea]
-    DataSets: List[str]
-    Details: Details
-
-
 class LocationModel(BaseModel):
-    response: list[LocationModelItem] | LocationGEOModel
+    response: list[LocationModelItem] | LocationModelItem
 
     def get_location_key(self):
         return self.response[0].Key
