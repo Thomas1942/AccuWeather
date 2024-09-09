@@ -15,8 +15,6 @@ You need to create an api token on the AccuWeather website (https://developer.ac
 ```python
 """"Some code to show the functionality of the package"""
 
-"""Some code to test and show the functionality of the package"""
-
 from accuweather_client.clients import WeatherClient
 from constants import API_KEY
 import pandas as pd
