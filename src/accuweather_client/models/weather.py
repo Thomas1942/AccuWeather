@@ -129,14 +129,17 @@ class ForecastModel5Days(BaseModel):
     @property
     def forecast_tomorrow(self) -> str:
         day_dict = self.daily_forecasts[1]
-        text = day_dict["Day"]["IconPhrase"].replace("w/", "with")
-        temp = day_dict["Temperature"]["Maximum"]["Value"]
-        temp_unit = day_dict["Temperature"]["Maximum"]["Unit"]
-        rain = day_dict["Day"]["RainProbability"]
+        text = day_dict.day.icon_phrase.replace("w/", "with")
+        temp = day_dict.temperature["Maximum"]["Value"]
+        temp_unit = day_dict.temperature["Maximum"]["Unit"]
+        rain = day_dict.day.precipitation_probability
         return f"{text}, max temp is {temp}{temp_unit} and {rain}% chance of rain."
 
     def to_pandas_df(self) -> pd.DataFrame:
-        return pd.DataFrame.from_records(self.daily_forecasts)
+        forecast_dicts = [
+            forecast.dict(by_alias=True) for forecast in self.daily_forecasts
+        ]
+        return pd.json_normalize(forecast_dicts)
 
 
 class HourlyForecastModel(BaseModel):
