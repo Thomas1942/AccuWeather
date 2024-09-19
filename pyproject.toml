@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "accuweather_client"
-version = "0.0.4"
+version = "1.0.0"
 description = "The goal of this project is to create a user-friendly api client for AccuWeather api."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -17,5 +17,5 @@ dependencies = [
 ]
 license = { text = "MIT" }
 authors = [{ name = "Thomas", email = "thomas.development1942@gmail.com" }]
-keywords = ["AccuWeather", "API", "weather", "client", "python"]
+keywords = ["AccuWeather", "API", "weather", "client", "python", "pydantic"]
 urls = { repository = "https://github.com/Thomas1942/AccuWeather" }

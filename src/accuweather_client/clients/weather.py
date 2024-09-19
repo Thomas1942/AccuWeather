@@ -23,6 +23,7 @@ from accuweather_client.clients import LocationBaseClient, get_location_model
 from accuweather_client.models import (
     CurrentConditionsModel,
     ForecastModel5Days,
+    HourlyForecastModel,
     LocationModelItem,
     TokenValidation,
 )
@@ -117,7 +118,7 @@ class WeatherClient(TokenValidation):
                 url=url,
                 params={"apikey": self.token, "details": "true"},
             )
-            response.raise_for_status()  # Raise error for bad responses
+            response.raise_for_status()
             return response.json()
         except RequestException as e:
             raise RequestException(
@@ -129,10 +130,23 @@ class WeatherClient(TokenValidation):
         Retrieves the 5-day weather forecast for the specified location.
 
         Returns:
-            ForecastModel5Days: A model containing the 5-day weather forecast data.
+            ForecastModel5Days: A model containing the 5-day weather forecast
+            data.
         """
-        return ForecastModel5Days(
-            output=self._make_request("forecasts/v1/daily/5day/")
+        return ForecastModel5Days.from_api_response(
+            self._make_request("forecasts/v1/daily/5day/")
+        )
+
+    def get_hourly_forecast_12h(self) -> HourlyForecastModel:
+        """
+        Retrieves an hourly forecast for the next 24 hours.
+
+        Returns:
+            HourlyForecastModel: A model containing the hourly weather forecast
+            for the next 24 hours.
+        """
+        return HourlyForecastModel(
+            output=self._make_request("forecasts/v1/hourly/12hour/")
         )
 
     def get_current_conditions(self) -> CurrentConditionsModel:
@@ -140,7 +154,8 @@ class WeatherClient(TokenValidation):
         Retrieves the current weather conditions for the specified location.
 
         Returns:
-            CurrentConditionsModel: A model containing the current weather conditions data.
+            CurrentConditionsModel: A model containing the current weather
+            conditions data.
         """
         return CurrentConditionsModel(
             output=self._make_request("currentconditions/v1/")
